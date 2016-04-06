@@ -2,7 +2,7 @@
   "name": "react-native-store",
   "version": "0.4.2",
   "description": "A simple database base on react-native AsyncStorage.",
-  "main": "./lib/index.js",
+  "main": "./src/index.js",
   "scripts": {
     "watch": "babel src --watch --presets es2015,stage-0 --out-dir lib",
     "build": "babel src --presets es2015,stage-0 --out-dir lib",
