@@ -84,6 +84,53 @@ class Model {
         return this.model.rows;
     }
 
+    // multi add or update
+    async multiAddOrUpdate(data, uniques) {
+        await this.initModel();
+        for (var key in data) {
+
+            // Update
+
+            var existingRowIndex = -1;
+
+            for (var i = 0; i < this.model.totalrows; i++) {
+              var isFound = true;
+              uniques.forEach((u_attr)=>{
+                if (this.model.rows[i][u_attr] != data[u_attr]) {
+                  isFound = false;
+                }
+              });
+
+              if (isFound) {
+                existingRowIndex = i;
+                break;
+              }
+            }
+
+            if (existingRowIndex != -1) {
+              this.model.rows[existingRowIndex] = data;
+              continue;
+            }
+
+            // Add
+
+            var value = data[key];
+            var autoinc = this.model.autoinc++;
+            if (this.model.rows[autoinc]) {
+                return Util.error("ReactNativeStore error: Storage already contains _id '" + autoinc + "'");
+            }
+            if (value._id) {
+                return Util.error("ReactNativeStore error: Don't need _id with add method");
+            }
+            value._id = autoinc;
+            this.model.rows[autoinc] = value;
+            this.model.totalrows++;
+        }
+        this.database[this.modelName] = this.model;
+        await AsyncStorage.setItem(this.dbName, JSON.stringify(this.database));
+        return this.model.rows;
+    }
+
     // update
     async update(data, filter) {
         await this.initModel();
